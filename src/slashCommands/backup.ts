@@ -6,19 +6,19 @@ import {
 } from "discord.js";
 import { getThemeColor } from "../functions";
 import { SlashCommand } from "../types";
+import { runBackup } from "../scheduler/dbBackup";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
-    .setName("ping")
-    .setDescription("Shows the bot's ping"),
+    .setName("dbbackup")
+    .setDescription("Backup Database"),
   execute: (interaction) => {
+    runBackup(interaction.client);
     interaction.reply({
       embeds: [
         new EmbedBuilder()
           .setAuthor({ name: "Cakrasoft Server" })
-          .setDescription(
-            `🏓 Pong! \n 📡 Ping: ${interaction.client.ws.ping} <a:loading_blue_circle:1230149797852483684> `
-          )
+          .setDescription(`Backup Database running`)
           .setColor(getThemeColor("text")),
       ],
     });

@@ -19,7 +19,9 @@
     "discord.js": "14.3.0",
     "dotenv": "^16.0.2",
     "mongoose": "^6.5.4",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "tar": "^7.0.1",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "typescript": "^4.8.2"
