@@ -57,7 +57,9 @@ function runCleaner(channel: TextChannel) {
     console.log("Tidak ada log yang lebih besar dari 500MB.");
     channel.send("Tidak ada log yang lebih besar dari 500MB.");
   } else {
-    logs.forEach(clearLog);
+    logs.forEach((file:any)=>{
+      clearLog(file,channel)
+    });
   }
 }
 
