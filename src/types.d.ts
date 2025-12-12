@@ -2,7 +2,7 @@ import { SlashCommandBuilder, CommandInteraction, Collection, PermissionResolvab
 import mongoose from "mongoose"
 
 export interface SlashCommand {
-    command: SlashCommandBuilder,
+    command: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder,
     execute: (interaction : ChatInputCommandInteraction) => void,
     autocomplete?: (interaction: AutocompleteInteraction) => void,
     modal?: (interaction: ModalSubmitInteraction<CacheType>) => void,
@@ -53,3 +53,4 @@ declare module "discord.js" {
         cooldowns: Collection<string, number>
     }
 }
+ 
