@@ -1,4 +1,5 @@
 import { Client, TextChannel } from "discord.js";
+import { backupQueue } from "./backupQueue";
 
 const { exec, execSync } = require("child_process");
 const { format, addDays, startOfDay } = require("date-fns");
@@ -24,7 +25,7 @@ async function runBackup(
   dbname?: string
 ): Promise<void> {
   const channel = client.channels.cache.get(serverChannelId) as TextChannel | null;
-  if (channel) channel.send("Backing up databases...");
+  if (channel) channel.send(`HOST ${Host} Backup -> **STARTED**`);
 
   const today = format(new Date(), "yyyyMMddHHmmss");
   const currentDate = format(new Date(), "yyyy-MM-dd HH:mm:ss");
@@ -129,14 +130,19 @@ async function runBackup(
     }
   });
 
-  if (channel) channel.send("Back up databases done.");
-  console.log("Backup Completed:", tarFileName);
+  if (channel) channel.send(`HOST ${Host} Backup -> ✅ **DONE**`);
+  console.log(`HOST ${Host} Backup -> ✅ **DONE**`, tarFileName);
 }
 
 
-// Schedule the backup to run daily at 18:00
-
-function scheduleDailyBackup(client: Client, Host:string,Port:string, user:string, pass:string) {
+// Schedule the backup to run daily at 18:00 
+function scheduleDailyBackup(
+  client: Client,
+  Host: string,
+  Port: string,
+  user: string,
+  pass: string
+) {
   const now = new Date();
   let scheduledTime = new Date(
     now.getFullYear(),
@@ -147,27 +153,32 @@ function scheduleDailyBackup(client: Client, Host:string,Port:string, user:strin
     0
   );
 
-  // Jika sekarang sudah lewat jam 18:00, jadwalkan untuk besok
   if (now.getTime() > scheduledTime.getTime()) {
+    const tomorrow = addDays(startOfDay(now), 1);
     scheduledTime = new Date(
-      addDays(startOfDay(now), 1).getFullYear(),
-      addDays(startOfDay(now), 1).getMonth(),
-      addDays(startOfDay(now), 1).getDate(),
+      tomorrow.getFullYear(),
+      tomorrow.getMonth(),
+      tomorrow.getDate(),
       18,
       0,
       0
     );
   }
 
-  const timeUntilNextRun = scheduledTime.getTime() - now.getTime();
-  console.log(
-    `Next backup scheduled at: ${format(scheduledTime, "yyyy-MM-dd HH:mm:ss")}`
-  );
+  const delay = scheduledTime.getTime() - now.getTime();
+  console.log(`[${Host}] Next backup at ${format(scheduledTime, "yyyy-MM-dd HH:mm:ss")}`);
 
   setTimeout(() => {
-    runBackup(client, Host,Port, user, pass);
-    scheduleDailyBackup(client, Host,Port, user, pass);
-  }, timeUntilNextRun);
+    backupQueue.enqueue(async () => {
+      console.log(`[${Host}] Backup started`);
+      await runBackup(client, Host, Port, user, pass);
+      console.log(`[${Host}] Backup finished`);
+    });
+
+    // schedule ulang untuk besok
+    scheduleDailyBackup(client, Host, Port, user, pass);
+  }, delay);
 }
+
 // Start the scheduler
 export { scheduleDailyBackup, runBackup };

@@ -19,8 +19,8 @@ const Port = process.env.MYSQL_PORT || "";
 const user = process.env.MYSQL_USER || "";
 const pass = process.env.MYSQL_PASS || "";
 
-const Host2 = process.env.MYSQL_HOST || "";
-const Port2 = process.env.MYSQL_PORT || "";
+const Host2 = process.env.MYSQL_HOST2 || "";
+const Port2 = process.env.MYSQL_PORT2 || "";
 const user2 = process.env.MYSQL_USER2 || "";
 const pass2 = process.env.MYSQL_PASS2 || "";
 
@@ -52,8 +52,8 @@ const event: BotEvent = {
       console.error("Unable to find the specified channel.");
     }
     console.log("Backup scheduler is running");
-    scheduleDailyBackup(client,Host,Port,user,pass );
-    scheduleDailyBackup(client,Host2,Port2,user2,pass2 );
+    scheduleDailyBackup(client,Host,Port,user,pass);
+    scheduleDailyBackup(client,Host2,Port2,user2,pass2);
     
     if (channel) {
       channel.send(`\\✅ Log Cleaner scheduler is running`);
